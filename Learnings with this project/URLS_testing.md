@@ -32,6 +32,40 @@ app.post('/users/login', async (req, res) => {
 
 </details>  
 
+<details>
+<summary>Also now corrected a simple mistake </summary>
+
+```javascript
+// to check user login
+app.post('/users/login', async (req, res) => {
+    const user = users.find(u => req.body.name ===u.name)
+    if (user === null) {
+        return res.status(401).send('Cannot find the user.')
+    }
+    console.log(user)
+    try {
+        if ( await bcrypt.compare(req.body.password, user.password)) {
+            res.status(200).send('success')            
+        }
+        else {
+            res.status(401).send('Not allowed')
+        }
+    }
+    catch {
+        res.status(500).send("Invalid user")
+    } 
+})
+```
+
+</details>
+
+- I identified my mistakes
+  - I forgot to write the await before the bcyrpt.compare
+  - I wrote  
+    ```const user = users.find(user => req.body.name === user.name)```  
+        INSTEAD OF  
+    ```const user = users.find(u => req.body.name ===u.name)```  
+
 I asked Perplexity.ai there was no error.  
 Then I told it about my fetch request.
 which looked like this.
@@ -47,4 +81,6 @@ const options = {
     .then(response => console.log(response))
     .catch(err => console.error(err));
 ```
-It said I shoud try putting http://localhost:$(PORT)/users/login
+
+It said I should try putting <http://localhost:$(PORT)/users/login>  
+This worked and I am feeling good and silly

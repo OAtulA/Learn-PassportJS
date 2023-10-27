@@ -218,7 +218,7 @@ app.post('/users/login', async (req, res) => {
     }
     catch {
         res.status(500).send("Invalid user")
-    }
+    } 
 })
 
 app.get("/", (req, res) => {
