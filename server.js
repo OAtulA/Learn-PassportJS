@@ -202,15 +202,15 @@ app.delete('/users/remove', (req, res)=>{
 })
 
 // to check user login
-app.get('/users/login', async (req, res) => {
-    const user = users.find(user => req.body.name === user.name)
+app.post('/users/login', async (req, res) => {
+    const user = users.find(u => req.body.name ===u.name)
     if (user === null) {
         return res.status(401).send('Cannot find the user.')
     }
     console.log(user)
     try {
-        if (bcrypt.compare(req.body.password, user.password)) {
-            res.status(200).send('success')
+        if ( await bcrypt.compare(req.body.password, user.password)) {
+            res.status(200).send('success')            
         }
         else {
             res.status(401).send('Not allowed')
