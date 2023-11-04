@@ -128,14 +128,19 @@ async function editUserName(user, updatedName) {
   }
 }
 
-function removeUser(user) {
-  const foundUser = users.find(async u =>
-    (u.name === user.name) && (u.password === user.password)
-  );
-  if (foundUser === undefined)
+async function removeUser(req, res) {
+  let user = req.body;
+  const foundUser = false;
+  for(const u of users){
+    if( (u.name === user.name) && (await bcrypt.compare(user.password, u.password)) ){
+      foundUser = u;
+      break;
+    }
+  }
+  if (!foundUser)
     res.status(401).send('User does not exist')
 
-  users = users.filter(u => (u.name === user.name) && (u.password === user.password));
+  users = users.filter(u => (u.name === user.name));
   fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
     if (err) throw err;
     console.log('User removed from file!');
@@ -176,17 +181,29 @@ async function addUser(user) {
   
   // duplicate user functionality not created.
 
+  // DEBUG
+  // console.log('DEBUG user:',user);
+  // console.log(user.name === users[0].name)
+
   // checking if user already exists
-  const freshUser = users.find(async u =>
-    (u.name === user.name) && await bcrypt.compare(user.password, u.password));
-    // //DEBUG
-    // console.log('DEBUG FreshUser:',freshUser);
-  if (freshUser === undefined) {
+
+  let freshUser = null;
+  for (const u of users) {
+    if (u.name === user.name && (await bcrypt.compare(user.password, u.password))) {
+      freshUser = u;
+      break;
+    }
+  }
+
+  //DEBUG
+  console.log('DEBUG FreshUser:',freshUser);
+
+  if (freshUser === null) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(user.password, salt);
     const newUser = { name: user.name, password: hashedPassword };
     // //DEBUG 
-    // console.log('DEBUG New user is: ',newUser)
+    console.log('DEBUG New user is: ',newUser)
     users.push(newUser);
     fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
       if (err) throw err;
@@ -205,6 +222,7 @@ async function addUser(user) {
 
 // to add new users
 app.post('/signup', async (req, res) => {
+  // console.log('??DEBUG req.body:', req.body)
   let user = await addUser(req.body);
   // //DEBUG
   // console.log('??DEBUG user:', user)
@@ -231,9 +249,7 @@ app.put('/users/name', (req, res) => {
   editUserName(existingUser, updatedName);
 })
 
-app.delete('/users/remove', (req, res) => {
-  removeUser(req.body);
-})
+app.delete('/users/remove', removeUser)
 
 // to check user login
 app.post('/users/login', async (req, res) => {
