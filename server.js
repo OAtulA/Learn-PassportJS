@@ -31,21 +31,12 @@ app.use(express.json())
 // to get json from req.body
 
 let users;
-// this is the middleware for the put requests to user/
-
-/*
-// function isLoggedIn(user){
-//     let isUser = users.find(u=> (u.name === user.name)&&(u.password === user.password));
-//     if(isUser === null){
-//         res.status(401).send('Unauthorized User!')
-//     }
-//     else next();
-// }
-*/
 
 // Middleware function to check if the user is logged in
 function isLoggedIn(req, res, next) {
   const user = users.find(user => (req.body.existingUser.name === user.name));
+  //DEBUG
+  console.log('DEBUG user:', user)
   if (user === null) {
     return res.status(401).send('Cannot find the user.');
   }
@@ -93,7 +84,7 @@ function editUserEmail(user, updatedEmail) {
     async u =>
       u.name === user.name && bcrypt.compare(user.password, u.password)
   );
-  if (foundUser === null)
+  if (foundUser === undefined)
     res.status(401).send('User does not exist')
   else if (foundUser) {
     foundUser.email = updatedEmail;
@@ -109,7 +100,7 @@ function editUserPassword(user, updatedPassword) {
   const foundUser = users.find(async u =>
     u.name === user.name && await bcrypt.compare(user.password, u.password)
   );
-  if (foundUser === null)
+  if (foundUser === undefined)
     res.status(401).send('User does not exist')
   else if (foundUser) {
     foundUser.password = updatedPassword;
@@ -125,7 +116,7 @@ async function editUserName(user, updatedName) {
   const foundUser = users.find(async u =>
     u.name === user.name && await bcrypt.compare(user.password, u.password)
   );
-  if (foundUser === null)
+  if (foundUser === undefined)
     res.status(401).send('User does not exist')
   else if (foundUser) {
     foundUser.name = updatedName;
@@ -141,7 +132,7 @@ function removeUser(user) {
   const foundUser = users.find(async u =>
     (u.name === user.name) && (u.password === user.password)
   );
-  if (foundUser === null)
+  if (foundUser === undefined)
     res.status(401).send('User does not exist')
 
   users = users.filter(u => (u.name === user.name) && (u.password === user.password));
@@ -170,20 +161,6 @@ async function readUsers() {
 }
 readUsers();
 
-/*
-fs.readFile('USERS.json', 'utf8', (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-
-    users = JSON.parse(data);
-    console.log('Existing users in the db ')
-    console.log(users);
-    console.log()   
-});
-*/
-
 // This is just for the basic project.
 //In real use case we will get from the server db sql/no sql
 
@@ -202,14 +179,14 @@ async function addUser(user) {
   // checking if user already exists
   const freshUser = users.find(async u =>
     (u.name === user.name) && await bcrypt.compare(user.password, u.password));
-    //DEBUG
-    console.log('//DEBUG FreshUser:',freshUser);
+    // //DEBUG
+    // console.log('DEBUG FreshUser:',freshUser);
   if (freshUser === undefined) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(user.password, salt);
     const newUser = { name: user.name, password: hashedPassword };
-    //DEBUG 
-    console.log('//DEBUG New user is: ',newUser)
+    // //DEBUG 
+    // console.log('DEBUG New user is: ',newUser)
     users.push(newUser);
     fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
       if (err) throw err;
@@ -229,8 +206,8 @@ async function addUser(user) {
 // to add new users
 app.post('/signup', async (req, res) => {
   let user = await addUser(req.body);
-  //DEBUG
-  console.log('??DEBUG user:', user)
+  // //DEBUG
+  // console.log('??DEBUG user:', user)
   if (user !== null) {
     res.status(201).send(user);
     console.log("Newly added user: ", users[users.length - 1])
