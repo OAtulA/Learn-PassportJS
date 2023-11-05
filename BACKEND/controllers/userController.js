@@ -1,10 +1,11 @@
 let bcrypt = require('bcrypt')
+let fs = require('fs').promises
 
 let users;
 
 // For signup Route
 async function addUser(user) {
-  
+
   // duplicate user functionality not created.
 
   // DEBUG
@@ -22,14 +23,14 @@ async function addUser(user) {
   }
 
   //DEBUG
-  console.log('DEBUG FreshUser:',freshUser);
+  console.log('DEBUG FreshUser:', freshUser);
 
   if (freshUser === null) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(user.password, salt);
     const newUser = { name: user.name, password: hashedPassword };
     // //DEBUG 
-    console.log('DEBUG New user is: ',newUser)
+    console.log('DEBUG New user is: ', newUser)
     users.push(newUser);
     fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
       if (err) throw err;
@@ -38,7 +39,7 @@ async function addUser(user) {
     return newUser;
     // res.status(201).send(user);
   }
-  else 
+  else
     return null;
   // else {
   //   res.status(401).send('User name unavailable');
@@ -137,6 +138,27 @@ async function editUserName(user, updatedName) {
 
 async function removeUser(req, res) {
   let user = req.body;
+  let foundUser = false;
+  for (const u of users) {
+    if ((u.name === user.name) && (await bcrypt.compare(user.password, u.password))) {
+      foundUser = true;
+      users = users.filter(u => (u.name !== user.name));
+      fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
+        if (err) throw err;
+        console.log('User removed from file!');
+      });
+      res.status(200).send('User removed successfully');
+      break;
+    }
+  }
+  if (!foundUser) {
+    res.status(401).send('User does not exist');
+  }
+}
+
+/*
+async function removeUser(req, res) {
+  let user = req.body;
   const foundUser = false;
   for (const u of users) {
     if ((u.name === user.name) && (await bcrypt.compare(user.password, u.password))) {
@@ -144,16 +166,18 @@ async function removeUser(req, res) {
       break;
     }
   }
-  if (!foundUser)
+  if (foundUser === false)
     res.status(401).send('User does not exist')
-
-  users = users.filter(u => (u.name === user.name));
-  fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
-    if (err) throw err;
-    console.log('User removed from file!');
-  });
+  else {
+    users = users.filter(u => (u.name === user.name));
+    fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
+      if (err) throw err;
+      console.log('User removed from file!');
+      res.status(201).send('User Removed');
+    });
+  }
 }
-
+*/
 async function readUsers() {
   try {
     let data = await fs.readFile('USERS.json', 'utf8');
@@ -173,5 +197,5 @@ async function readUsers() {
 }
 readUsers();
 
-const userControllers = [addUser, login, isLoggedIn, removeUser, editUserName , editUserPassword ]
+const userControllers = {addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
 module.exports = userControllers;
