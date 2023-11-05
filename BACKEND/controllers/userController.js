@@ -154,17 +154,27 @@ async function editUserName(user, updatedName) {
 
 async function removeUser(req, res) {
   let user = req.body;
+  //DEBUG
+  // console.log('DEBUG user:', user);
   let foundUser = false;
   for (const u of users) {
-    if ((u.name === user.name) && (await bcrypt.compare(user.password, u.password))) {
-      foundUser = true;
-      users = users.filter(u => (u.name !== user.name));
-      fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
-        if (err) throw err;
-        console.log('User removed from file!');
-      });
-      res.status(200).send('User removed successfully');
-      break;
+    //DEBUG
+    let sameName = (u.name === user.name) 
+    // console.log('DEBUG u:',u,  sameName)
+    if (sameName) {
+      let passwordCheck = await bcrypt.compare(user.password, u.password)
+      // console.log('DEBUG password check',passwordCheck )
+      if (passwordCheck) {
+        foundUser = true;
+        users = users.filter(u => (u.name !== user.name));
+        fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
+          if (err) throw err;
+          // console.log('User removed from file!');
+        });
+        console.log('User removed:', user)
+        res.status(200).send('User removed successfully');
+        break;
+      }
     }
   }
   if (!foundUser) {
@@ -191,5 +201,5 @@ async function readUsers() {
 }
 readUsers();
 
-const userControllers = {reqUser, signupUser, addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
+const userControllers = { reqUser, signupUser, addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword }
 module.exports = userControllers;
