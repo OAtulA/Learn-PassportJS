@@ -3,17 +3,7 @@ const userController = require("../controllers/userController");
 
 const router = express.Router();
 
-router.post("/signup",async (req, res) => {
-    // console.log('??DEBUG req.body:', req.body)
-    let user = await userController.addUser(req.body);
-    // //DEBUG
-    // console.log('??DEBUG user:', user)
-    if (user !== null) {
-      res.status(201).send(user);
-      console.log("Newly added user: ", users[users.length - 1])
-    }
-    else res.status(401).send('User name unavailable');
-  });
+router.post("/signup",userController.signupUser);
 router.put("/users/password", (req, res) => {
     let existingUser = req.body.existingUser;
     let updatedPassword = req.Update.password;

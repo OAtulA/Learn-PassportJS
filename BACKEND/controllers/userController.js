@@ -23,14 +23,14 @@ async function addUser(user) {
   }
 
   //DEBUG
-  console.log('DEBUG FreshUser:', freshUser);
+  // console.log('DEBUG FreshUser:', freshUser);
 
   if (freshUser === null) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(user.password, salt);
     const newUser = { name: user.name, password: hashedPassword };
     // //DEBUG 
-    console.log('DEBUG New user is: ', newUser)
+    // console.log('DEBUG New user is: ', newUser)
     users.push(newUser);
     fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
       if (err) throw err;
@@ -44,6 +44,18 @@ async function addUser(user) {
   // else {
   //   res.status(401).send('User name unavailable');
   // }
+}
+
+let signupUser = async (req, res) => {
+  // console.log('??DEBUG req.body:', req.body)
+  let user = await addUser(req.body);
+  // //DEBUG
+  // console.log('??DEBUG user:', user)
+  if (user !== null) {
+    res.status(201).send(user);
+    console.log("Newly added user: ", users[users.length - 1])
+  }
+  else res.status(401).send('User name unavailable');
 }
 
 // Middleware function to check if the user is logged in
@@ -156,28 +168,6 @@ async function removeUser(req, res) {
   }
 }
 
-/*
-async function removeUser(req, res) {
-  let user = req.body;
-  const foundUser = false;
-  for (const u of users) {
-    if ((u.name === user.name) && (await bcrypt.compare(user.password, u.password))) {
-      foundUser = u;
-      break;
-    }
-  }
-  if (foundUser === false)
-    res.status(401).send('User does not exist')
-  else {
-    users = users.filter(u => (u.name === user.name));
-    fs.writeFile('USERS.json', JSON.stringify(users), (err) => {
-      if (err) throw err;
-      console.log('User removed from file!');
-      res.status(201).send('User Removed');
-    });
-  }
-}
-*/
 async function readUsers() {
   try {
     let data = await fs.readFile('USERS.json', 'utf8');
@@ -197,5 +187,5 @@ async function readUsers() {
 }
 readUsers();
 
-const userControllers = {addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
+const userControllers = {signupUser, addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
 module.exports = userControllers;
