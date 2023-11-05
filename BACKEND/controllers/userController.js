@@ -58,6 +58,10 @@ let signupUser = async (req, res) => {
   else res.status(401).send('User name unavailable');
 }
 
+let reqUser = (req, res) => {
+  res.json(users);
+}
+
 // Middleware function to check if the user is logged in
 function isLoggedIn(req, res, next) {
   const user = users.find(user => (req.body.existingUser.name === user.name));
@@ -187,5 +191,5 @@ async function readUsers() {
 }
 readUsers();
 
-const userControllers = {signupUser, addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
+const userControllers = {reqUser, signupUser, addUser, login, isLoggedIn, removeUser, editUserName, editUserPassword}
 module.exports = userControllers;
