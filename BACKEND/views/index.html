@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+    <style>
+        .flex-col{
+            display: flex;
+            flex-direction: column;
+        }
+        .cirular{
+            border-radius: 50%;
+        }
+        .auth-form{
+            margin-top: 20vh;
+            margin-right: auto;
+            margin-left: auto;
+            min-width: 30vw;
+            border: 5px solid black ;            
+        }
+    </style>
+</head>
+<body>
+    <div class="auth">
+        <button class="auth-btn" onclick="changePage()"> Authenticate Me</button>
+    </div>
+    <script>
+        // Change to auth page
+        function changePage(){
+            // Removing the current page
+            let page = document.querySelector(".auth");
+            document.body.removeChild(page);
+
+            // Let's add the new page
+            let newPage= document.createElement('div')
+            newPage.classList.add("auth-form-page", "flex-col")
+            document.body.appendChild(newPage);            
+
+            // Let's add some properties to newPage
+            let backBtn = document.createElement("button");
+            backBtn.className= "circular";
+            backBtn.innerText= "<-Back";
+            backBtn.onclick= ()=>{
+                console.log("Back button hit")
+                document.body.removeChild(newPage)
+                document.body.appendChild(page)
+                // newPage.parentElement.removeChild(newPage)
+                // document.getElementsByTagName("body").appendChild(page)
+            }
+
+            // Now my form
+            let formElement = document.createElement("div");
+            formElement.className= "auth-form"
+            let emailElement = document.createElement("input");
+            emailElement.placeholder= "mymail@gmail.com";
+
+            let passwordElement = document.createElement("input");
+            passwordElement.placeholder= "myPasswd1224";
+
+            let submitBtn = document.createElement("button")
+            submitBtn.innerText= "Submit"
+
+            // formElement.append([emailElement, passwordElement, submitBtn])
+            formElement.appendChild(emailElement)
+            formElement.appendChild(passwordElement)
+            formElement.appendChild(submitBtn)
+
+            //aDD elements to newpage
+            // newPage.append([backBtn, formElement])
+            newPage.appendChild(backBtn)
+            newPage.appendChild(formElement)
+        }
+    </script>
+</body>
+</html>
