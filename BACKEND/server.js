@@ -6,8 +6,10 @@ const path = require("path");
 const authRouter = require("./controllers/passport-jwt-auth");
 const { default: mongoose } = require("mongoose");
 let cors = require('cors')
+const cookieParser = require("cookie-parser");
 
 app.use(cors())
+app.use(cookieParser());
 
 const db = mongoose.connect("mongodb://localhost:27017")
   .then(
