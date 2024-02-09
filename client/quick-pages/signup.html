@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Page</title>
+</head>
+
+<body>
+
+    <form style="display: flex; flex-direction: column;" >
+        <label for=""> Email</label>
+        <input type="text" placeholder="kaduMosai@mail.com">
+        <label for="" Password></label>
+        <input type="password" placeholder="123" id="">
+        <button onclick="sendData()"> Submit</button>
+    </form>
+    <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/login.html"> Login Page</a>
+    <br>
+    <br>
+    <p></p>
+    <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/protect.html"></a>
+    <script>
+        let sendData=() => {
+
+            const options = { method: 'POST', body: '{"email":"kaduMosai@mail.com","password":"123"}' };
+
+            fetch('http://localhost:8002/auth/signup', options)
+                .then(response => response.json())
+                .then(response => console.log(response))
+                .catch(err => console.error(err));
+            console.log("I made the request.")
+        }
+    </script>
+</body>
+
+</html>

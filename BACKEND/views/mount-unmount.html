@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just- learning how to mount and unmount components</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .new-page input {
+            max-width: 13rem;
+        }
+
+        .new-page .form {
+            margin-right: auto;
+            margin-left: auto;
+            max-width: fit-content;
+        }
+
+        .new-page button {
+            max-width: 9rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cirular {
+            border-radius: 50%;
+        }
+
+        .auth-form {
+            margin-top: 20vh;
+            margin-right: auto;
+            margin-left: auto;
+            min-width: 30vw;
+            border: 5px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth">
+        <button class="auth-btn" onclick="changePage()"> Authenticate Me</button>
+    </div>
+
+    <!-- new Page -->
+
+    <script>
+        let newPageHTML = `    <div class="new-page">
+        <button onclick="pageBack()"> Back</button>
+
+        <div class="flex-col form">
+            <input type="email" placeholder="mymail@gmail.com">
+            <input type="text" placeholder="myPasswd1224">
+            <button onclick="authMepls()"> Submit</button>
+        </div>
+    </div>`
+        function authMepls() {
+            console.log("Auth request sent.")
+        }
+        let page;
+        let newPage = document.createElement('div')
+        // Change to auth page
+        function changePage() {
+            // Removing the current page
+            page = document.querySelector(".auth");
+            document.body.removeChild(page);
+
+            // Let's add the new page
+            
+            newPage.innerHTML= newPageHTML;
+            // newPage.classList.add("auth-form-page", "flex-col")
+            document.body.appendChild(newPage);
+            // document.body.insertAdjacentHTML(newPage)
+
+            /*
+            // Let's add some properties to newPage
+            let backBtn = document.createElement("button");
+            backBtn.className= "circular";
+            backBtn.innerText= "<-Back";
+            backBtn.onclick= ()=>{
+                console.log("Back button hit")
+                document.body.removeChild(newPage)
+                document.body.appendChild(page)
+                // newPage.parentElement.removeChild(newPage)
+                // document.getElementsByTagName("body").appendChild(page)
+            }
+
+            // Now my form
+            
+            let formElement = document.createElement("div");
+            formElement.className= "auth-form"
+            let emailElement = document.createElement("input");
+            emailElement.placeholder= "mymail@gmail.com";
+
+            let passwordElement = document.createElement("input");
+            passwordElement.placeholder= "myPasswd1224";
+
+            let submitBtn = document.createElement("button")
+            submitBtn.innerText= "Submit"
+
+            // formElement.append([emailElement, passwordElement, submitBtn])
+            formElement.appendChild(emailElement)
+            formElement.appendChild(passwordElement)
+            formElement.appendChild(submitBtn)
+            */
+
+            //aDD elements to newpage
+            // newPage.append([backBtn, formElement])
+            newPage.appendChild(backBtn)
+            newPage.appendChild(formElement)
+        }
+        function pageBack(){
+            console.log("go back")
+            document.body.removeChild(newPage)
+            document.body.appendChild(page)
+        }
+    </script>
+</body>
+
+</html>

@@ -3,6 +3,8 @@ const userController = require("../controllers/userController");
 
 const router = express.Router();
 
+router.get('/users', userController.reqUser)
+
 router.post("/signup",userController.signupUser);
 router.put("/users/password", (req, res) => {
     let existingUser = req.body.existingUser;
