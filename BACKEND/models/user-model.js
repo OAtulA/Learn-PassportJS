@@ -1,4 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+// import mongoose, { Schema } from "mongoose";
+let mongoose = require('mongoose')
+let Schema = mongoose.Schema
 
 let UserSchema = new Schema({
     email:{
