@@ -33,9 +33,15 @@ app.post("/auth/protected",(req, res, next)=>{
   console.log('/auth/protected hit.');
   next();
 }, authRouter.authenticateJWT, (req, res)=>{
-  res.send(`User is ${req.user}`)
-  res.status(201).send("You are verified 😇️ ")
-} )
+  console.log("User verified");
+  const user = req.user;
+  const successMessage = "You are verified 😇️ ";
+  const responseData = {
+    user: user,
+    successMessage: successMessage
+  };
+  res.status(201).json(responseData);
+});
 
 app.listen(8002, () => {
   console.log("Server started\n Listening on http://localhost:8002");
