@@ -22,7 +22,12 @@ const SECRET = process.env.SECRET || "KaddU";
 const router = express.Router();
 
 // const opts = { algorithm: 'HS516', httpOnly: true, secretOrKey: SECRET, jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), passReqToCallback: true };
-const opts = { algorithm: 'HS516', secretOrKey: SECRET, jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), passReqToCallback: true };
+const opts = {
+   algorithm: "HS516",
+   secretOrKey: SECRET,
+   jwtFromRequest: (req) => req.cookies.accessToken,
+   passReqToCallback: true,
+};
 
 let secretKey = SECRET;
 
