@@ -50,7 +50,52 @@ pnpm i
 pnpm run dev
 ```
 
+## Reproducing the error
+
+### Signup part
+
+```JS
+const options = {method: 'POST', body: '{"email":"kaduMosai@mail.com","password":"123"}'};
+
+fetch('http://localhost:8002/auth/signup', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+
+### login part
+
+```JS
+const options = {method: 'POST', body: '{"email":"kaduMosai@mail.com","password":"123"}'};
+
+fetch('http://localhost:8002/auth/login', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+
+### Authentication part
+
+```JS
+
+let accessToken = ''  //Recieved accessToken
+let refreshToken = '' //Recieved refreshToken
+const options = {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+    Cookie: `refreshToken=${refreshToken}`
+  }
+};
+
+fetch('http://localhost:8002/auth/protected', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+
 ## THANKS
 
 Thank you for reading this.  
 If any question please ask.  
+If any mistake please tell.
