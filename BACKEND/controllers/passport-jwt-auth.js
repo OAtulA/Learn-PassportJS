@@ -1,16 +1,9 @@
-// import express, { Router,Request, Response, NextFunction } from 'express';
 let express = require("express")
-// import bcrypt from 'bcrypt';
 let bcrypt = require("bcrypt")
 let jwt = require('jsonwebtoken')
-// import jwt from 'jsonwebtoken';
-// import passport from 'passport';
 let passport = require('passport')
-// import User, {IUser} from '../../models/user-model';
 let User = require('../models/user-model')
-// import { config } from 'dotenv';
 let config = require('dotenv').config
-// import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 let JwtStrategy = require('passport-jwt').Strategy
 let ExtractJwt = require('passport-jwt').ExtractJwt
 
@@ -132,6 +125,38 @@ const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done)
 })
 */
 
+const checkValidRefreshToken= async (err, decoded) => {
+  if (err) {
+    // Refresh token verification failed
+    return done(null, false);
+  } else {
+    const refreshToken = decoded;
+    // refresh token still valid
+    if (refreshToken && refreshToken.exp > currentTime) {            
+      try {              
+        let user = await User.findById(refreshToken.id);
+        if (!user) {
+          return (null, false);
+        }
+        const [accessToken, refreshToken] = signToken(user)
+
+        res = ResForFreshAccessKeys;              
+        res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });              
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+
+        res.send("New acess Key and refresh key granted");
+        // Since the value is no longer needed.
+        ResForFreshAccessKeys = null;
+        return done(null, user)
+      } catch (err) {
+        return done(null, false);
+      }
+    } else {
+      return done(null, false);
+    }
+  }
+}
+
 const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done) => {
   try {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -145,38 +170,7 @@ const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done)
         // No refreshToken cookie found in the request
         return done(null, false);
       }
-
-      jwt.verify(refreshTokenCookie, secretKey, async (err, decoded) => {
-        if (err) {
-          // Refresh token verification failed
-          return done(null, false);
-        } else {
-          const refreshToken = decoded;
-          // refresh token still valid
-          if (refreshToken && refreshToken.exp > currentTime) {            
-            try {              
-              let user = await User.findById(refreshToken.id);
-              if (!user) {
-                return (null, false);
-              }
-              const [accessToken, refreshToken] = signToken(user)
-
-              res = ResForFreshAccessKeys;              
-              res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });              
-              res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-
-              res.send("New acess Key and refresh key granted");
-              // Since the value is no longer needed.
-              ResForFreshAccessKeys = null;
-              return (null, user)
-            } catch (err) {
-              return done(null, false);
-            }
-          } else {
-            return done(null, false);
-          }
-        }
-      });
+      jwt.verify(refreshTokenCookie, secretKey, checkValidRefreshToken);
     } else {
       // Access token is still valid
       // Find the user based on the decoded payload
@@ -193,7 +187,6 @@ const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done)
     return done(error, false);
   }
 });
-
 
 passport.use(passportJwtStrategy);
 passport.initialize()
