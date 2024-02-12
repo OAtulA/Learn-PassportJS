@@ -22,13 +22,13 @@ const SECRET = process.env.SECRET || "KaddU";
 const router = express.Router();
 
 // const opts = { algorithm: 'HS516', httpOnly: true, secretOrKey: SECRET, jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), passReqToCallback: true };
-const opts = { algorithm: 'HS516', secretOrKey: SECRET, jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), passReqToCallback: true };
-// const opts = {
-//    algorithm: "HS516",
-//    secretOrKey: SECRET,
-//    jwtFromRequest: (req) => req.cookies.accessToken,
-//    passReqToCallback: true,
-// };
+// As the browser might not save the accessToken as the bearer token
+const opts = {
+   algorithm: "HS516",
+   secretOrKey: SECRET,
+   jwtFromRequest: (req) => req.cookies.accessToken,
+   passReqToCallback: true,
+};
 
 let secretKey = SECRET;
 
@@ -36,10 +36,12 @@ let ResForFreshAccessKeys;
 // This will be used to send fresh access tokens if the access tokens expire.
 
 passport.serializeUser( (user, done)=> {
+  console.log('Serialize called')
   done(null, user)
 })
 
 passport.deserializeUser( (user, done)=>{
+  console.log('deserialize called')
   done(null, user)
 })
 
@@ -49,8 +51,8 @@ function signToken(user) {
   let refreshExpireTime = Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7); // 1 week in seconds
 
   try {
-    const accessToken = jwt.sign({ id: user._id, Expires: accessExpireTime }, secretKey);
-    const refreshToken = jwt.sign({ id: user._id, Expires: refreshExpireTime }, secretKey);
+    const accessToken = jwt.sign({ id: user._id, exp: accessExpireTime }, secretKey);
+    const refreshToken = jwt.sign({ id: user._id, exp: refreshExpireTime }, secretKey);
 
     return { accessToken, refreshToken };
   } catch (err) {
@@ -130,6 +132,10 @@ const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done)
       console.log()
 
       const refreshToken = req.cookies.refreshToken;
+      // check refreshToken.
+      console.log()
+      console.log("RefreshTOken is: ", refreshToken)
+      console.log()
       if (refreshToken && refreshToken.Expires < currentTime) {
         // @ts-ignore
         
