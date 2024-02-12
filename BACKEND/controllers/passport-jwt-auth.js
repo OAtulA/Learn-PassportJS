@@ -24,10 +24,10 @@ const router = express.Router();
 // const opts = { algorithm: 'HS516', httpOnly: true, secretOrKey: SECRET, jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), passReqToCallback: true };
 // As the browser might not save the accessToken as the bearer token
 const opts = {
-   algorithm: "HS516",
-   secretOrKey: SECRET,
-   jwtFromRequest: (req) => req.cookies.accessToken,
-   passReqToCallback: true,
+  algorithm: "HS516",
+  secretOrKey: SECRET,
+  jwtFromRequest: (req) => req.cookies.accessToken,
+  passReqToCallback: true,
 };
 
 let secretKey = SECRET;
@@ -35,12 +35,12 @@ let secretKey = SECRET;
 let ResForFreshAccessKeys;
 // This will be used to send fresh access tokens if the access tokens expire.
 
-passport.serializeUser( (user, done)=> {
+passport.serializeUser((user, done) => {
   console.log('Serialize called')
   done(null, user)
 })
 
-passport.deserializeUser( (user, done)=>{
+passport.deserializeUser((user, done) => {
   console.log('deserialize called')
   done(null, user)
 })
@@ -59,45 +59,7 @@ function signToken(user) {
     console.log(err);
   }
 }
-
 /*
-function signToken(user) {
-  // Generate JWT token with expiration time of 1 month (in seconds)
-  let expireTime = Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)
-  try {
-    const token = jwt.sign({ id user._id, exp expireTime }, SECRET);
-
-    return token;
-  }
-  catch(err){
-    console.log(err);
-  }
-}
-*/
-/*
-passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
-  try {
-    const user = await User.findById(jwt_payload.id);
-
-    if (!user) {
-      return done(null, false);
-    }
-
-    const currentTime = Date.now() / 1000;
-
-    // Check if the JWT token has expired
-    if (jwt_payload.exp < currentTime) {
-      return done(null, false);
-    }
-
-    return done(null, user);
-  } catch (error) {
-    console.log(error);
-    return done(error, false);
-  }
-}));
-*/
-
 const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done) => {
   try {
 
@@ -168,6 +130,70 @@ const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done)
     return done(error, false);
   }
 })
+*/
+
+const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done) => {
+  try {
+    const currentTime = Math.floor(Date.now() / 1000);
+
+    // Check if the  access token has expired
+    if (jwt_payload.exp < currentTime) {
+      // Access token has expired, check the refresh token
+      const refreshTokenCookie = req.cookies.refreshToken;
+
+      if (!refreshTokenCookie) {
+        // No refreshToken cookie found in the request
+        return done(null, false);
+      }
+
+      jwt.verify(refreshTokenCookie, secretKey, async (err, decoded) => {
+        if (err) {
+          // Refresh token verification failed
+          return done(null, false);
+        } else {
+          const refreshToken = decoded;
+          // refresh token still valid
+          if (refreshToken && refreshToken.exp > currentTime) {            
+            try {              
+              let user = await User.findById(refreshToken.id);
+              if (!user) {
+                return (null, false);
+              }
+              const [accessToken, refreshToken] = signToken(user)
+
+              res = ResForFreshAccessKeys;              
+              res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });              
+              res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+
+              res.send("New acess Key and refresh key granted");
+              // Since the value is no longer needed.
+              ResForFreshAccessKeys = null;
+              return (null, user)
+            } catch (err) {
+              return done(null, false);
+            }
+          } else {
+            return done(null, false);
+          }
+        }
+      });
+    } else {
+      // Access token is still valid
+      // Find the user based on the decoded payload
+      const user = await User.findById(jwt_payload.id);
+      if (!user) {
+        return done(null, false);
+      }
+
+      // JWT token is valid, proceed with user authentication
+      return done(null, user);
+    }
+  } catch (error) {
+    console.log(error);
+    return done(error, false);
+  }
+});
+
 
 passport.use(passportJwtStrategy);
 passport.initialize()
@@ -208,7 +234,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-
 // Login Route with JWT
 router.post('/login', async (req, res) => {
   try {
@@ -238,11 +263,11 @@ router.post('/login', async (req, res) => {
     // Generate JWT token with expiration time of 1 month (in seconds)
     // jwt.sign({ id user._id, exp Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30) }, SECRET);
     //@ts-ignore
-    const {accessToken, refreshToken} = signToken(user);
-    
+    const { accessToken, refreshToken } = signToken(user);
+
     res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    
+
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     console.log(error);
@@ -254,7 +279,7 @@ router.post('/login', async (req, res) => {
 // @ts-ignore
 const authenticateJWT = (req, res, next) => {
   // @ts-ignore
-  ResForFreshAccessKeys= res;
+  ResForFreshAccessKeys = res;
   passport.authenticate('jwt', { session: false, passReqToCallback: true }, (err, user, info) => {
     if (err) {
       console.log(err);
