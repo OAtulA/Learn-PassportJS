@@ -136,7 +136,7 @@ const checkValidRefreshToken= async (err, decoded) => {
       try {              
         let user = await User.findById(refreshToken.id);
         if (!user) {
-          return (null, false);
+          return done(null, false);
         }
         const [accessToken, refreshToken] = signToken(user)
 
