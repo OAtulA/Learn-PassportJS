@@ -5,7 +5,7 @@ fetch('http://localhost:8002/auth/protected', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${accessToken}`,
+    'Cookie': `accessToken=${accessToken}`,
     'Cookie': `refreshToken=${refreshToken}`
   }
 })
