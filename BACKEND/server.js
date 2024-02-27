@@ -24,7 +24,7 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   // res.sendFile(path.resolve("views/index.html"));
-  res.send("Cool the server is up and running.")
+  res.send("Cool the UserAuth server is up and running.")
 })
 
 app.use('/auth', authRouter)
