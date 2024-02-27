@@ -29,3 +29,8 @@ npm i pnpm
 pnpm i
 pnpm run dev
 ```
+
+## 💡️ Checking the Routes
+
+I have a directory `Dummy_requests` there are  few files in it.  
+Just directly execute them to check the routes.
