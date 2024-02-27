@@ -40,8 +40,8 @@ passport.deserializeUser((user, done) => {
 
 function signToken(user) {
   // Generate JWT tokens with expiration time of 3 hours for access token and 1 week for refresh token (in seconds)
-  let accessExpireTime = Math.floor(Date.now() / 1000) + (60 * 60 * 3); // 3 hours in seconds
-  let refreshExpireTime = Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7); // 1 week in seconds
+  let accessExpireTime = Math.floor( (Date.now() / 1000) +(60 * 60 * 3/1000) ); // 3 hours in seconds
+  let refreshExpireTime = Math.floor( (Date.now() / 1000) + (60 * 60 * 24 * 7/1000) ); // 1 week in seconds
 
   try {
     const accessToken = jwt.sign({ id: user._id, exp: accessExpireTime }, secretKey);
@@ -52,78 +52,6 @@ function signToken(user) {
     console.log(err);
   }
 }
-/*
-const passportJwtStrategy = new JwtStrategy(opts, async (req, jwt_payload, done) => {
-  try {
-
-    // DEBUG
-    console.log()
-    console.log("Here the jwt payload is: ", jwt_payload)
-    console.log()
-
-    const user = await User.findById(jwt_payload.id);
-
-    if (!user) {
-      return done(null, false);
-    }
-
-    const currentTime = Date.now() / 1000;
-
-    // Check if the JWT token has expired
-    // so imagine like 2pm less than 3pm
-    if (jwt_payload.Expires < currentTime) {
-      // Check if the refresh token is present and valid
-      // @ts-ignore
-
-      //DEBUG
-      console.log()
-      console.log( "jwt_payload.Expires < currentTime:", jwt_payload.Expires < currentTime)
-      console.log()
-
-      //DEBUG
-      console.log()
-      console.log("Request is: ", req)      
-      // fs.writeFile( path.resolve(__dirname, "../../Thoughts/requestRecieved.txt"),`Request is :\n $(req)`)
-      console.log()
-
-      const refreshToken = req.cookies.refreshToken;
-      // check refreshToken.
-      console.log()
-      console.log("RefreshTOken is: ", refreshToken)
-      console.log()
-      if (refreshToken && refreshToken.Expires < currentTime) {
-        // @ts-ignore
-        
-        try {
-          // const userFromRefreshToken = jwt.verify(refreshToken, secretKey);
-          // const newAccessToken = jwt.sign({ id userFromRefreshToken.id }, secretKey, { expiresIn '3h' });
-          // res.set('Authorization', `Bearer ${newAccessToken}`);
-          // @ts-ignore
-          const [accessToken, refreshToken] = signToken(user)
-
-          res = ResForFreshAccessKeys;
-          //@ts-ignore
-          res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-          //@ts-ignore
-          res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-
-          // Since the value is no longer needed.
-          ResForFreshAccessKeys=null;
-        } catch (err) {
-          return done(null, false);
-        }
-      } else {
-        return done(null, false);
-      }
-    }
-
-    return done(null, user);
-  } catch (error) {
-    console.log(error);
-    return done(error, false);
-  }
-})
-*/
 
 const checkValidRefreshToken= async (err, decoded) => {
   if (err) {
@@ -138,7 +66,7 @@ const checkValidRefreshToken= async (err, decoded) => {
         if (!user) {
           return done(null, false);
         }
-        const [accessToken, refreshToken] = signToken(user)
+        const {accessToken, refreshToken} = signToken(user)
 
         res = ResForFreshAccessKeys;              
         res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });              
@@ -233,7 +161,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ $email: email });
 
     if (!user) {
       return res.status(401).json({ message: 'Authentication failed, email not found' });
