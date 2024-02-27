@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogOut Page</title>
+</head>
+
+<body>
+    <h2> LogOut form</h2>
+    <div class="form">
+        <input type="email" class="email" placeholder="kudda@mail.com"> <br>
+        <input type="password" class="password" placeholder="password"> <br>
+        <Button style="width: 7rem; height: 3rem; background-color: aquamarine;" onclick="LogOut"> Logout</Button>
+    </div>
+</body>
+<script>
+    function LogOut(e){
+        console.log("Logout initiated")
+        const email = document.querySelector('.email').value;
+        const password =  document.querySelector('.password').value;
+        
+        // delete request on localhost:8002
+        fetch('http://localhost:8002/api/auth/logout',{
+            method: 'DELETE', 
+            body: JSON.stringify({email,password}),
+            headers: "content-type:application/json"
+        })
+    }
+</script>
+
+</html>
