@@ -106,7 +106,6 @@ const passportJwtStrategy = new JwtStrategy(
   async (req, jwt_payload, done) => {
     try {
       const currentTime = Math.floor(Date.now() / 1000);
-
       // Check if the  access token has expired
       if (jwt_payload.exp < currentTime) {
         // Access token has expired, check the refresh token
@@ -222,12 +221,10 @@ router.post("/login", async (req, res) => {
     // httpOnly token way for the deployment
     res.cookie("accessToken", accessToken, {
       httpOnly: false,
-      secure: true,
       sameSite: "none",
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: false,
-      secure: true,
       sameSite: "none",
     });
 
