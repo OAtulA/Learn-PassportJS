@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const loginCall = () => {
@@ -40,6 +41,7 @@ const LoginPage = () => {
   return (
     <div>
       <button onClick={loginCall}>Click me already :)</button>
+      <Link to="/signup">Signup</Link>
     </div>
   );
 };

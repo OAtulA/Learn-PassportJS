@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProtectedPageCheck = () => {
+const ProtectedPage = () => {
   const protectedCheck = () => {
     const options = {
       method: "POST",
@@ -27,4 +27,4 @@ const ProtectedPageCheck = () => {
   );
 };
 
-export default ProtectedPageCheck;
+export default ProtectedPage;

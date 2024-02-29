@@ -1,4 +1,7 @@
 import React from "react";
+import LoginPage from "./login";
+import ProtectedPage from "./protected";
+import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
   const sendData = () => {
@@ -29,12 +32,12 @@ const SignUpPage = () => {
         <input type="password" placeholder="123" id="password" />
       </form>
       <button onClick={sendData}>Submit</button>
-      <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/login.html">
-        Login Page
-      </a>
+      {/* link to Login page */}
+      <Link to="/login">Login Page</Link>
       <br />
       <br />
       <p></p>
+
       <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/protect.html"></a>
     </div>
   );
