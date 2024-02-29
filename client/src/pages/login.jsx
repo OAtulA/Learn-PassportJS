@@ -24,7 +24,7 @@ const LoginPage = () => {
         console.log("response is: ", response);
 
         // print all headers from response
-        console.log("headers are: ");
+        console.log("headers are: ", JSON.stringify(response.headers));
         let headers = response.headers;
         for (let pair of headers.entries()) {
           console.log(pair);

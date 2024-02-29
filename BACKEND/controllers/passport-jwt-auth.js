@@ -220,11 +220,13 @@ router.post("/login", async (req, res) => {
 
     // httpOnly token way for the deployment
     res.cookie("accessToken", accessToken, {
-      httpOnly: false,
+      httpOnly: true,
+      secure: true,
       sameSite: "none",
     });
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
+      secure: true,
       sameSite: "none",
     });
 
