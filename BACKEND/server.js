@@ -13,7 +13,8 @@ app.use(cors());
 app.use(cookieParser());
 
 //  TO start the docker container for the passport-auth mongo
-(() => {
+
+if (process.env.NODE_ENV === "development") {
   exec("docker start passport-auth", (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
@@ -25,7 +26,7 @@ app.use(cookieParser());
     }
     console.log(`stdout: ${stdout}`);
   });
-})();
+}
 
 const db = mongoose.connect("mongodb://localhost:27017").then((og) => {
   console.log("Hello db is connected.");
