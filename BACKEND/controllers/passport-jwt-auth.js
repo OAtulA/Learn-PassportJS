@@ -166,30 +166,17 @@ router.post("/signup", async (req, res) => {
     const { accessToken, refreshToken } = signToken(newUser);
 
     let cookieOptions = {
-      httpOnly: flase,
+      httpOnly: true,
       secure: false,
       sameSite: "none",
     };
-
-    // Adds the production settings.
-    if (process.env.NODE_ENV === "production") {
-      cookieOptions = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      };
-    }
 
     res
       .status(201)
       .json({ success: true, message: "User created successfully" });
 
     res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    res.cookie("refreshToken", refreshToken, cookieOptions);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
