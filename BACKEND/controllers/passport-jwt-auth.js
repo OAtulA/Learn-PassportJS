@@ -161,7 +161,7 @@ router.post("/signup", async (req, res) => {
 
     // Generate JWT token with expiration time of 1 month (in seconds)
     // const token = jwt.sign({ id newUser._id, Expires Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30) }, SECRET);
-    const [accessToken, refreshToken] = signToken(newUser);
+    const { accessToken, refreshToken } = signToken(newUser);
 
     res
       .status(201)
