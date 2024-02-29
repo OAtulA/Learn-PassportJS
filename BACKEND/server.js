@@ -12,10 +12,6 @@ const { exec } = require("child_process");
 app.use(cors());
 app.use(cookieParser());
 
-const db = mongoose.connect("mongodb://localhost:27017").then((og) => {
-  console.log("Hello db is connected.");
-});
-
 //  TO start the docker container for the passport-auth mongo
 (() => {
   exec("docker start passport-auth", (error, stdout, stderr) => {
@@ -28,9 +24,12 @@ const db = mongoose.connect("mongodb://localhost:27017").then((og) => {
       return;
     }
     console.log(`stdout: ${stdout}`);
-    db();
   });
 })();
+
+const db = mongoose.connect("mongodb://localhost:27017").then((og) => {
+  console.log("Hello db is connected.");
+});
 
 app.use(express.json());
 // app.use("/", userRoutes);
