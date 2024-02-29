@@ -19,6 +19,7 @@
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
         };
 
         fetch("http://localhost:8002/auth/login", options)
@@ -28,8 +29,12 @@
               throw new Error("Network response was not ok");
             }
             // Get the cookies from the response headers
-            const cookies = response.headers.get("Set-Cookie");
-            console.log(cookies);
+            // const cookies = response.headers
+            // console.log(cookies);
+            console.log("Headers are: ");
+            for (var pair of response.headers.entries()) {
+              console.log(pair[0] + ": " + pair[1]);
+            }
             // Set received cookies in the browser
             if (cookies) {
               document.cookie = cookies;
