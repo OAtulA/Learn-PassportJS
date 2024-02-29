@@ -39,11 +39,9 @@ passport.deserializeUser((user, done) => {
 });
 
 function signToken(user) {
-  // Generate JWT tokens with expiration time of 3 hours for access token and 1 week for refresh token (in seconds)
-  let accessExpireTime = Math.floor(Date.now() / 1000 + (60 * 60 * 3) / 1000); // 3 hours in seconds
-  let refreshExpireTime = Math.floor(
-    Date.now() / 1000 + (60 * 60 * 24 * 7) / 1000
-  ); // 1 week in seconds
+  // Generate JWT tokens with expiration time of 3 minutes for access token and 1 hour for refresh token (in seconds)
+  let accessExpireTime = Math.floor(Date.now() / 1000 + 60 * 3); // 3 minutes in seconds
+  let refreshExpireTime = Math.floor(Date.now() / 1000 + 1 * 60 * 60); // 1 hour in seconds
 
   try {
     const accessToken = jwt.sign(
@@ -219,12 +217,12 @@ router.post("/login", async (req, res) => {
     const { accessToken, refreshToken } = signToken(user);
 
     // httpOnly token way for the deployment
-    res.cookie("accessToken", accessToken, {
-      httpOnly: false,
-      sameSite: "none",
-    });
+    // res.cookie("accessToken", accessToken, {
+    //   httpOnly: false,
+    //   sameSite: "none",
+    // });
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "none",
     });
 
@@ -233,7 +231,9 @@ router.post("/login", async (req, res) => {
     // res.cookie('accessToken', accessToken, { secure: true, sameSite: 'none', httpOnly: false });
     // res.cookie('refreshToken', refreshToken, { secure: true, sameSite: 'none', httpOnly: false });
 
-    res.status(201).json({ message: "User created successfully" });
+    res
+      .status(201)
+      .json({ message: "User created successfully", accessToken: accessToken });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
