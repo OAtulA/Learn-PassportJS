@@ -147,7 +147,9 @@ router.post("/signup", async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res
+        .status(400)
+        .json({ message: "User already exists", user: existingUser });
     }
 
     // Create a new user
@@ -163,15 +165,26 @@ router.post("/signup", async (req, res) => {
     // const token = jwt.sign({ id newUser._id, Expires Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30) }, SECRET);
     const { accessToken, refreshToken } = signToken(newUser);
 
+    let cookieOptions = {
+      httpOnly: flase,
+      secure: false,
+      sameSite: "none",
+    };
+
+    // Adds the production settings.
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      };
+    }
+
     res
       .status(201)
       .json({ success: true, message: "User created successfully" });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
@@ -189,7 +202,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     // Check if user exists
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res
