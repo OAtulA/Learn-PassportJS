@@ -33,6 +33,10 @@ const LoginPage = () => {
       })
       .then((response) => {
         console.log(response);
+        let accessToken = response.accessToken;
+        console.log("access token is: ", accessToken);
+
+        // save accessToken to cookie
       })
       .catch((err) => console.error(err));
   };
