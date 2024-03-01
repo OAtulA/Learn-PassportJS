@@ -31,6 +31,12 @@ const LoginPage = () => {
           let accessToken = responseData.accessToken;
           console.log("access token is: ", accessToken);
 
+          // Set the accessToken cookie correctly
+          document.cookie = `accessToken=${accessToken}; path=/; SameSite=Strict; expires=${new Date(
+            Date.now() + 1000 * 60 * 5
+          ).toUTCString()}`;
+          console.log("cookie is: ", document.cookie);
+
           // The refreshToken HttpOnly cookie will be automatically stored by the browser
         } else {
           throw new Error("Network response was not ok");
