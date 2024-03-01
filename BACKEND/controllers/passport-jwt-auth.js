@@ -40,18 +40,12 @@ passport.deserializeUser((user, done) => {
 
 function signToken(user) {
   // Generate JWT tokens with expiration time of 3 minutes for access token and 1 hour for refresh token (in seconds)
-  let accessExpireTime = Math.floor(Date.now() / 1000 + 60 * 3); // 3 minutes in seconds
-  let refreshExpireTime = Math.floor(Date.now() / 1000 + 1 * 60 * 60); // 1 hour in seconds
+  // let accessExpireTime = Math.floor(Date.now() + 60 * 3 * 1000); // 3 minutes in seconds
+  // let refreshExpireTime = Math.floor(Date.now() + 1 * 60 * 60 * 1000); // 1 hour in seconds
 
   try {
-    const accessToken = jwt.sign(
-      { id: user._id, exp: accessExpireTime },
-      secretKey
-    );
-    const refreshToken = jwt.sign(
-      { id: user._id, exp: refreshExpireTime },
-      secretKey
-    );
+    const accessToken = jwt.sign({ id: user._id, expiresIn: "5m" }, secretKey);
+    const refreshToken = jwt.sign({ id: user._id, expiresIn: "1h" }, secretKey);
 
     return { accessToken, refreshToken };
   } catch (err) {
@@ -221,8 +215,10 @@ router.post("/login", async (req, res) => {
     //   httpOnly: false,
     //   sameSite: "none",
     // });
+    const expires = new Date(Date.now() + 60 * 60 * 1000);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      expires: expires,
       sameSite: "none",
     });
 
