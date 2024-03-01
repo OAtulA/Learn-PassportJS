@@ -9,7 +9,12 @@ let cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { exec } = require("child_process");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 //  TO start the docker container for the passport-auth mongo
