@@ -1,31 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
-</head>
-
-<body>
-
-    
-        <button onclick="loginCall()">Click me Alrready:)</button>
-    
+  </head>
+  <body>
+    <button onclick="loginCall()">Click me already :)</button>
 
     <script>
-        function loginCall() {
-            const options = { method: 'POST', 
-            body: JSON.stringify({"email":"kaduMosai@mail.com","password":"123"}) ,
-            headers:{'Content-type':'application/json'}
+      function loginCall() {
+        const options = {
+          method: "POST",
+          body: JSON.stringify({
+            email: "kaduMosai@mail.com",
+            password: "123",
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
         };
 
-            fetch('http://localhost:8002/auth/login', options)
-                .then(response => response.json())
-                .then(response => console.log(response))
-                .catch(err => console.error(err));
-        }
+        fetch("http://localhost:8002/auth/login", options)
+          .then((response) => {
+            // Check if response status is in the 200 range
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            // Get the cookies from the response headers
+            // const cookies = response.headers
+            // console.log(cookies);
+            console.log("Headers are: ");
+            for (var pair of response.headers.entries()) {
+              console.log(pair[0] + ": " + pair[1]);
+            }
+            // Set received cookies in the browser
+            if (cookies) {
+              document.cookie = cookies;
+            }
+            return response.json();
+          })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((err) => console.error(err));
+      }
     </script>
-</body>
-
+  </body>
 </html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+  </head>
+
+  <body>
+    <button onclick="loginCall()">Click me Alrready:)</button>
+
+    <script>
+      function loginCall() {
+        const options = {
+          method: "POST",
+          body: JSON.stringify({
+            email: "kaduMosai@mail.com",
+            password: "123",
+          }),
+        };
+
+        fetch("http://localhost:8002/auth/login", options)
+          .then((response) => {
+            console.log(response.headers);
+            console.log("cookies are", response.cookie);
+            console.log("doc cookie", document.cookie);
+
+            const cookies = response.headers.get("Set-Cookie");
+            console.log("cookies: ", cookies);
+            // console
+            // let accessToken = cookies.split(";")[0].split("=")[1];
+            // console.log("accessToken :", accessToken)
+
+            return response.json();
+          })
+          .then((response) => {
+            console.log("cookies are", response.cookie);
+            console.log("doc cookie", document.cookie);
+            console.log(response);
+          })
+          .catch((err) => console.error(err));
+      }
+
+      // Function to set cookie
+      function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+          expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+      }
+
+      // Example usage
+      // Set a cookie named "username" with value "John Doe" that expires in 30 days
+    </script>
+  </body>
+</html> -->
