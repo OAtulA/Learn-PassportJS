@@ -1,42 +1,40 @@
 import React from "react";
-
+import axios from "axios";
+import { Link } from "react-router-dom";
 const LoginPage = () => {
   const loginCall = () => {
     const options = {
       method: "POST",
-      body: JSON.stringify({
+      data: {
         email: "kaduMosai@mail.com",
         password: "123",
-      }),
+      },
       headers: {
         "Content-Type": "application/json",
       },
+      withCredentials: true, // Ensure Axios includes cookies in the request
     };
 
-    fetch("http://localhost:8002/auth/login", options)
+    axios("http://localhost:8002/auth/login", options)
       .then((response) => {
         // Check if response status is in the 200 range
-        if (!response.ok) {
+        if (response.status >= 200 && response.status < 300) {
+          console.log("response is: ", response);
+
+          // Print all headers from response
+          console.log("headers are: ");
+          console.log(response.headers);
+
+          let responseData = response.data;
+          console.log(responseData);
+
+          let accessToken = responseData.accessToken;
+          console.log("access token is: ", accessToken);
+
+          // The refreshToken HttpOnly cookie will be automatically stored by the browser
+        } else {
           throw new Error("Network response was not ok");
         }
-
-        console.log("response is: ", response);
-
-        // print all headers from response
-        console.log("headers are: ");
-        let headers = response.headers;
-        for (let pair of headers.entries()) {
-          console.log(pair);
-        }
-
-        return response.json();
-      })
-      .then((response) => {
-        console.log(response);
-        let accessToken = response.accessToken;
-        console.log("access token is: ", accessToken);
-
-        // save accessToken to cookie
       })
       .catch((err) => console.error(err));
   };
@@ -44,6 +42,14 @@ const LoginPage = () => {
   return (
     <div>
       <button onClick={loginCall}>Click me already :)</button>
+      <br />
+      <br />
+      <br />
+      <Link to="/signup">Sign Up</Link>
+      <br />
+      <br />
+      <br />
+      <Link to="/protected">Protected</Link>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
   const sendData = () => {
@@ -29,13 +30,14 @@ const SignUpPage = () => {
         <input type="password" placeholder="123" id="password" />
       </form>
       <button onClick={sendData}>Submit</button>
-      <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/login.html">
-        Login Page
-      </a>
       <br />
       <br />
-      <p></p>
-      <a href="/home/atul/MyCode/Projects/WEB-DEV/basics/Backend_Minis/UserAuth/client/auth-learn/quick-pages/protect.html"></a>
+      <Link to="/login">Login</Link>
+      <br />
+      <br />
+      <p></p> <br />
+      <br />
+      <Link to="/protected">Protected</Link>
     </div>
   );
 };
