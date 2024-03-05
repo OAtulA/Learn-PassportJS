@@ -215,11 +215,6 @@ router.post("/login", async (req, res) => {
     //   sameSite: "none",
     // });
     const expires = new Date(Date.now() + 60 * 60 * 1000);
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      expires: expires,
-      sameSite: "none",
-    });
 
     // send the access token and refresh token to the client without the httponly
     // It will be for devlopment purposte only
@@ -227,6 +222,11 @@ router.post("/login", async (req, res) => {
     // res.cookie('refreshToken', refreshToken, { secure: true, sameSite: 'none', httpOnly: false });
 
     res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        expires: expires,
+        sameSite: "none",
+      })
       .status(201)
       .json({ message: "User created successfully", accessToken: accessToken });
   } catch (error) {
