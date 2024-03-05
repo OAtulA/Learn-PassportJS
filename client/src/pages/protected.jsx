@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 const ProtectedPage = () => {
   const protectedCheck = () => {
     const requestData = {
@@ -26,6 +27,10 @@ const ProtectedPage = () => {
   return (
     <div>
       <button onClick={protectedCheck}>Protected page check</button>
+      <br />
+      <br />
+      <br />
+      <Link to="/login">Login Page</Link>
     </div>
   );
 };
