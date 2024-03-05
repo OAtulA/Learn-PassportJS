@@ -32,7 +32,7 @@ const LoginPage = () => {
           console.log("access token is: ", accessToken);
 
           // Set the accessToken cookie correctly
-          document.cookie = `accessToken=${accessToken}; path=/; SameSite=Strict; expires=${new Date(
+          document.cookie = `accessToken=${accessToken}; path=/; secure=true ;SameSite=Strict; expires=${new Date(
             Date.now() + 1000 * 60 * 5
           ).toUTCString()}`;
           console.log("cookie is: ", document.cookie);
