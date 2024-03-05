@@ -154,20 +154,19 @@ router.post("/signup", async (req, res) => {
 
     // Generate JWT token with expiration time of 1 month (in seconds)
     // const token = jwt.sign({ id newUser._id, Expires Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30) }, SECRET);
-    const { accessToken, refreshToken } = signToken(newUser);
+    // const { accessToken, refreshToken } = signToken(newUser);
 
-    let cookieOptions = {
-      httpOnly: true,
-      secure: false,
-      sameSite: "none",
-    };
+    // let cookieOptions = {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "none",
+    // };
 
+    // res.cookie("accessToken", accessToken, cookieOptions);
+    // res.cookie("refreshToken", refreshToken, cookieOptions);
     res
       .status(201)
       .json({ success: true, message: "User created successfully" });
-
-    res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshToken", refreshToken, cookieOptions);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
