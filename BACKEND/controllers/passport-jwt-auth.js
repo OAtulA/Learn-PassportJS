@@ -69,15 +69,22 @@ const checkValidRefreshToken = async (err, decoded) => {
         const { accessToken, refreshToken } = signToken(user);
 
         res = ResForFreshAccessKeys;
+        let accessExpireTime = new Date(Date.now() + 60 * 3 * 1000); // 3 minutes in seconds
         res.cookie("accessToken", accessToken, {
           httpOnly: false,
+          expires: accessExpireTime,
+          sameSite: "strict",
           secure: true,
-          sameSite: "none",
+          path: "/",
+          domain: "localhost",
         });
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
+          expires: accessExpireTime,
+          sameSite: "strict",
           secure: true,
-          sameSite: "none",
+          path: "/",
+          domain: "localhost",
         });
 
         res.send("New acess Key and refresh key granted");
@@ -209,18 +216,12 @@ router.post("/login", async (req, res) => {
     //@ts-ignore
     const { accessToken, refreshToken } = signToken(user);
 
-    // httpOnly token way for the deployment
-    // res.cookie("accessToken", accessToken, {
-    //   httpOnly: false,
-    //   sameSite: "none",
-    // });
-    const expires = new Date(Date.now() + 60 * 60 * 1000);
-
     // send the access token and refresh token to the client without the httponly
     // It will be for devlopment purposte only
     // res.cookie('accessToken', accessToken, { secure: true, sameSite: 'none', httpOnly: false });
     // res.cookie('refreshToken', refreshToken, { secure: true, sameSite: 'none', httpOnly: false });
 
+    const expires = new Date(Date.now() + 60 * 60 * 1000);
     res
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
