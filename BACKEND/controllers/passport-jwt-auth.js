@@ -225,7 +225,7 @@ router.post("/login", async (req, res) => {
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         expires: expires,
-        sameSite: "none",
+        sameSite: "strict",
       })
       .status(201)
       .json({ message: "User created successfully", accessToken: accessToken });
