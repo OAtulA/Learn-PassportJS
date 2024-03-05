@@ -70,7 +70,7 @@ const checkValidRefreshToken = async (err, decoded) => {
 
         res = ResForFreshAccessKeys;
         res.cookie("accessToken", accessToken, {
-          httpOnly: true,
+          httpOnly: false,
           secure: true,
           sameSite: "none",
         });
@@ -226,6 +226,8 @@ router.post("/login", async (req, res) => {
         httpOnly: true,
         expires: expires,
         sameSite: "strict",
+        path: "/",
+        domain: "localhost",
       })
       .status(201)
       .json({ message: "User created successfully", accessToken: accessToken });
