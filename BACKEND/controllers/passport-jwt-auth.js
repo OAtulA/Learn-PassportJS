@@ -226,6 +226,7 @@ router.post("/login", async (req, res) => {
         httpOnly: true,
         expires: expires,
         sameSite: "strict",
+        secure: true,
         path: "/",
         domain: "localhost",
       })
